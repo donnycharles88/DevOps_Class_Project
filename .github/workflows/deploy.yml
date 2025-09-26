@@ -1,0 +1,38 @@
+name: Deploy Hugo site to GitHub Pages
+
+on:
+  push:
+    branches:
+      - master  # atau main, sesuaikan dengan branch utama repo kamu
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. Setup Hugo
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: '0.55.0' # sesuaikan versi Hugo yang kamu pakai
+
+      # 3. Install theme Beautiful Hugo
+      - name: Install Beautiful Hugo theme
+        run: |
+          mkdir -p themes/beautifulhugo
+          git clone https://github.com/halogenica/beautifulhugo.git themes/beautifulhugo
+
+      # 4. Build Hugo site
+      - name: Build Hugo site
+        run: hugo --minify --theme beautifulhugo
+
+      # 5. Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
